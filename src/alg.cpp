@@ -1,91 +1,69 @@
 // Copyright 2021 NNTU-CS
-int countPairs1(int *arr, int len, int value) {
-  int count = 0;
-  for (int i = 0; i < len; i++) {
-    for (int j = i + 1; j < len; j++) {
-      if (arr[i] + arr[j] == value) {
-        count++;
-      } else if (arr[i] + arr[j] > value) {
-        break;
-      }
-    }
-  }
-  return count;
-}
-
-int countPairs2(int *arr, int len, int value) {
-  int count = 0;
-  int left = 0, right = len - 1;
-  while (left < right) {
-    int sum = arr[left] + arr[right];
-    if (sum == value) {
-      if (arr[left] == arr[right]) {
-        int n = right - left + 1;
-        count += n * (n - 1) / 2;
-        break;
-      } else {
-        int lCount = 0, rCount = 0;
-        int leftVal = arr[left], rightVal = arr[right];
-        while (left < len && arr[left] == leftVal) {
-          lCount++;
-          left++;
+int pairCountBrute(int *array, int size, int targetSum) {
+    int totalPairs = 0;
+    for (int a = 0; a < size; a++) {
+        for (int b = a + 1; b < size; b++) {
+            if (array[a] + array[b] == targetSum) {
+                totalPairs++;
+            }
         }
-        while (right >= 0 && arr[right] == rightVal) {
-          rCount++;
-          right--;
+    }
+    return totalPairs;
+}
+
+int pairCountOptimized(int *array, int size, int targetSum) {
+    int totalPairs = 0;
+    int maxIndex = size - 1;
+
+    while (maxIndex > 0 && array[maxIndex] > targetSum) {
+        maxIndex--;
+    }
+
+    for (int i = 0; i < size; i++) {
+        for (int j = maxIndex; j > i; j--) {
+            if (array[i] + array[j] == targetSum) {
+                totalPairs++;
+            }
         }
-        count += lCount * rCount;
-      }
-    } else if (sum < value) {
-      left++;
-    } else {
-      right--;
     }
-  }
-  return count;
+
+    return totalPairs;
 }
 
-int lower_bound_custom(int *arr, int left, int right, int target) {
-  int l = left, r = right;
-  while (l <= r) {
-    int mid = l + (r - l) / 2;
-    if (arr[mid] < target) {
-      l = mid + 1;
-    } else {
-      r = mid - 1;
-    }
-  }
-  return l;
-}
+int pairCountBinary(int *array, int size, int targetSum) {
+    int totalPairs = 0;
 
-int upper_bound_custom(int *arr, int left, int right, int target) {
-  int l = left, r = right;
-  while (l <= r) {
-    int mid = l + (r - l) / 2;
-    if (arr[mid] <= target) {
-      l = mid + 1;
-    } else {
-      r = mid - 1;
-    }
-  }
-  return l;
-}
+    for (int i = 0; i < size; ++i) {
+        int required = targetSum - array[i];
+        int left = i + 1;
+        int right = size - 1;
 
-int binarySearchCount(int *arr, int left, int right, int target) {
-  int lb = lower_bound_custom(arr, left, right, target);
-  int ub = upper_bound_custom(arr, left, right, target);
-  return ub - lb;
-}
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (array[mid] >= required) {
+                right = mid - 1;
+            } else {
+                left = mid + 1;
+            }
+        }
+        int firstMatch = left;
 
-int countPairs3(int *arr, int len, int value) {
-  int count = 0;
-  for (int i = 0; i < len; i++) {
-    int target = value - arr[i];
-    if (target < arr[i]) {
-      break;
+        left = i + 1;
+        right = size - 1;
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (array[mid] <= required) {
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+        int lastMatch = right;
+
+        if (firstMatch <= lastMatch) {
+            totalPairs += lastMatch - firstMatch + 1;
+        }
     }
-    int cnt = binarySearchCount(arr, i + 1, len - 1, target);
-    count += cnt;
-  }
-  return count;
+
+    return totalPairs;
 }
