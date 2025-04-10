@@ -1,69 +1,69 @@
 // Copyright 2021 NNTU-CS
-int pairCountBrute(int *array, int size, int targetSum) {
-    int totalPairs = 0;
-    for (int a = 0; a < size; a++) {
-        for (int b = a + 1; b < size; b++) {
-            if (array[a] + array[b] == targetSum) {
-                totalPairs++;
+int countPairs1(int *array, int length, int target) {
+    int pairCount = 0;
+    for (int first = 0; first < length; first++) {
+        for (int second = first + 1; second < length; second++) {
+            if (array[first] + array[second] == target) {
+                pairCount++;
             }
         }
     }
-    return totalPairs;
+    return pairCount;
 }
 
-int pairCountOptimized(int *array, int size, int targetSum) {
-    int totalPairs = 0;
-    int maxIndex = size - 1;
+int countPairs2(int *array, int length, int target) {
+    int pairCount = 0;
+    int upperBound = length - 1;
 
-    while (maxIndex > 0 && array[maxIndex] > targetSum) {
-        maxIndex--;
+    while (upperBound > 0 && array[upperBound] > target) {
+        upperBound--;
     }
 
-    for (int i = 0; i < size; i++) {
-        for (int j = maxIndex; j > i; j--) {
-            if (array[i] + array[j] == targetSum) {
-                totalPairs++;
+    for (int left = 0; left < length; left++) {
+        for (int right = upperBound; right > left; right--) {
+            if (array[left] + array[right] == target) {
+                pairCount++;
             }
         }
     }
 
-    return totalPairs;
+    return pairCount;
 }
 
-int pairCountBinary(int *array, int size, int targetSum) {
-    int totalPairs = 0;
+int countPairs3(int *array, int length, int target) {
+    int pairCount = 0;
 
-    for (int i = 0; i < size; ++i) {
-        int required = targetSum - array[i];
-        int left = i + 1;
-        int right = size - 1;
+    for (int index = 0; index < length; ++index) {
+        int required = target - array[index];
+        int low = index + 1;
+        int high = length - 1;
 
-        while (left <= right) {
-            int mid = left + (right - left) / 2;
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
             if (array[mid] >= required) {
-                right = mid - 1;
+                high = mid - 1;
             } else {
-                left = mid + 1;
+                low = mid + 1;
             }
         }
-        int firstMatch = left;
+        int firstMatch = low;
 
-        left = i + 1;
-        right = size - 1;
-        while (left <= right) {
-            int mid = left + (right - left) / 2;
+        low = index + 1;
+        high = length - 1;
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
             if (array[mid] <= required) {
-                left = mid + 1;
+                low = mid + 1;
             } else {
-                right = mid - 1;
+                high = mid - 1;
             }
         }
-        int lastMatch = right;
+        int lastMatch = high;
 
         if (firstMatch <= lastMatch) {
-            totalPairs += lastMatch - firstMatch + 1;
+            pairCount += lastMatch - firstMatch + 1;
         }
     }
 
-    return totalPairs;
+    return pairCount;
 }
